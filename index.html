@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>Minesweeper</title>
+	<script type="text/javascript" src="./main.js"></script>
+	<style>
+	body {
+		background-color: #000;
+		text-align: center;
+	}
+	
+	#wrapper {
+		text-align: center;
+	}
+	
+	#field {
+		height: 700px;
+		width: 700px;
+		background-color: #000;
+		text-align: center;
+		margin: auto;
+	}
+	
+	input {
+		border: 1px solid #000;
+		background-color: #fff;
+		font-size: 25px;
+		font-weight: 900;
+		font-family: monospace;
+		color: #ddd;
+	}
+	
+	input[readonly] {
+		background-color: #0a0;
+	}
+	
+	input[disabled] {
+		background-color: #333;
+	}
+	</style>
+</head>
+<body oncontextmenu="return false">
+	<div id="wrapper">
+		<div id="field"></div>
+	</div>
+</body>
+</html>
