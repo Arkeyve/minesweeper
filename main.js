@@ -1,7 +1,3 @@
-var mines_matrix = [];
-var mines_pos = [];
-var click_count = [];
-var mines;
 window.onload = function() {
 	var field = document.getElementById("field");
 	
@@ -11,7 +7,9 @@ window.onload = function() {
 	var yOffSet = field.getBoundingClientRect().top;
 	var xCells = field.getBoundingClientRect().width / unit;
 	var yCells = field.getBoundingClientRect().height / unit;
-	mines = Math.floor((xCells * yCells) * 0.15);
+	
+	var mines_matrix = [];
+	var mines = Math.floor((xCells * yCells) * 0.15);
 	
 	for(var i = 0; i < xCells; i++) {
 		mines_matrix[i] = [];
@@ -142,26 +140,19 @@ window.onload = function() {
 			}
 		}
 		
-		function add_mines_to_matrix() {
-			for(var i in mines_pos) {
-				mines_matrix[mines_pos[i].x][mines_pos[i].y] = -1;
-				if(i == mines - 1) refresh_mines_matrix();
-			}
-		}
-		
 		for(var i = 0; i < mines; i++) {
 			var temp_mine_pos = {
 				x: Math.floor(Math.random() * xCells),
 				y: Math.floor(Math.random() * yCells)
 			};
 			
-			if(temp_mine_pos.x == Number.parseInt(nomine_x) && temp_mine_pos.y == Number.parseInt(nomine_y)) {
+			if((temp_mine_pos.x == Number.parseInt(nomine_x) && temp_mine_pos.y == Number.parseInt(nomine_y)) || (mines_matrix[temp_mine_pos.x][temp_mine_pos.y] === -1)) {
 				i--;
 			} else {
-				mines_pos[i] = temp_mine_pos;
+				mines_matrix[temp_mine_pos.x][temp_mine_pos.y] = -1;
 			}
 			
-			if(i === mines - 1) add_mines_to_matrix();
+			if(i === mines - 1) refresh_mines_matrix();
 		}
 	}
 }
