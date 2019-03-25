@@ -1,21 +1,22 @@
 window.onload = function() {
 	var field = document.getElementById("field");
-	
+
 	var unit = 50;
 	var firstClick = true;
 	var xOffSet = field.getBoundingClientRect().left;
 	var yOffSet = field.getBoundingClientRect().top;
 	var xCells = field.getBoundingClientRect().width / unit;
 	var yCells = field.getBoundingClientRect().height / unit;
-	
+	var timer, seconds = 0;
+
 	var mines_matrix = [];
 	var mines = Math.floor((xCells * yCells) * 0.15);
-	
+
 	for(var i = 0; i < xCells; i++) {
 		mines_matrix[i] = [];
 		for(var j = 0; j < yCells; j++) {
 			mines_matrix[i][j] = 0;
-			
+
 			var cell = document.createElement("input");
 			cell.type = "button";
 			cell.name = "mine_cell";
@@ -27,6 +28,7 @@ window.onload = function() {
 			cell.id = i + ":" + j;
 			cell.style.height = "50px";
 			cell.style.width = "50px";
+			cell.className = "cell";
 			cell.oncontextmenu = function() {
 				this.readOnly = !this.readOnly;
 			}
@@ -35,34 +37,39 @@ window.onload = function() {
 					click_action(this);
 					this.disabled = true;
 					if(this.getAttribute("cell_value") == "-1") {
-						end_game();
+						end_game("l");
 					} else {
 						this.value = this.getAttribute("cell_value");
 					}
-				}				
+					if(((xCells * yCells) - document.querySelectorAll('.cell[disabled]').length) === mines) {
+						end_game("w");
+					}
+				}
 			}
-			
+
 			field.appendChild(cell);
 		}
 	}
-	
-	function end_game() {
+
+	function end_game(type) {
 		var mine_cells = document.getElementsByName("mine_cell");
 		for(var i = 0; i < xCells; i++) {
 			for(var j = 0; j < yCells; j++) {
 				mine_cells[i * xCells + j].onclick = function() {};
 				if(mines_matrix[i][j] == -1) {
-					mine_cells[i * xCells + j].style.backgroundColor = "#900";
+					if(type === "l") mine_cells[i * xCells + j].style.backgroundColor = "#900";
+					else if(type === "w") mine_cells[i * xCells + j].style.backgroundColor = "#0a0";
 				}
 			}
 		}
+		clearInterval(timer);
 	}
-	
+
 	function click_action(clicked_cell) {
 		if(firstClick) {
 			firstClick = false;
 			generate_mines(clicked_cell.getAttribute("x"), clicked_cell.getAttribute("y"));
-		} else {				
+		} else {
 			if(clicked_cell.getAttribute("cell_value") === "0") {
 				var cellX = Number.parseInt(clicked_cell.getAttribute("x"));
 				var cellY = Number.parseInt(clicked_cell.getAttribute("y"));
@@ -109,7 +116,7 @@ window.onload = function() {
 			}
 		}
 	}
-	
+
 	function generate_mines(nomine_x, nomine_y) {
 		function refresh_mines_matrix() {
 			var mine_cells = document.getElementsByName("mine_cell");
@@ -125,13 +132,11 @@ window.onload = function() {
 						if((i - 1) >= 0 && (j + 1) < yCells && mines_matrix[i - 1][j + 1] === -1) mine_count++;
 						if((i + 1) < xCells && (j - 1) >= 0 && mines_matrix[i + 1][j - 1] === -1) mine_count++;
 						if((i + 1) < xCells && (j + 1) < yCells && mines_matrix[i + 1][j + 1] === -1) mine_count++;
-						
+
 						mines_matrix[i][j] = mine_count;
 						mine_cells[i * xCells + j].setAttribute("cell_value", mine_count);
-						//mine_cells[i * xCells + j].value = mine_count;
 					} else {
 						mine_cells[i * xCells + j].setAttribute("cell_value", -1);
-						//mine_cells[i * xCells + j].value = -1;
 					}
 					if(i === xCells - 1 && j === yCells - 1 && document.getElementById(nomine_x + ":" + nomine_y).getAttribute("cell_value") === "0") {
 						document.getElementById(nomine_x + ":" + nomine_y).click();
@@ -139,20 +144,25 @@ window.onload = function() {
 				}
 			}
 		}
-		
+
 		for(var i = 0; i < mines; i++) {
 			var temp_mine_pos = {
 				x: Math.floor(Math.random() * xCells),
 				y: Math.floor(Math.random() * yCells)
 			};
-			
+
 			if((temp_mine_pos.x == Number.parseInt(nomine_x) && temp_mine_pos.y == Number.parseInt(nomine_y)) || (mines_matrix[temp_mine_pos.x][temp_mine_pos.y] === -1)) {
 				i--;
 			} else {
 				mines_matrix[temp_mine_pos.x][temp_mine_pos.y] = -1;
 			}
-			
+
 			if(i === mines - 1) refresh_mines_matrix();
 		}
+
+		timer = setInterval(function() {
+			seconds++;
+			document.getElementById("timer").value = seconds;
+		}, 1000);
 	}
 }
