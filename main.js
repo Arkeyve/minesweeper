@@ -35,7 +35,6 @@ window.onload = function() {
 			cell.onclick = function() {
 				if(!this.readOnly) {
 					click_action(this);
-					this.disabled = true;
 					if(this.getAttribute("cell_value") == "-1") {
 						end_game("l");
 					} else {
@@ -44,6 +43,7 @@ window.onload = function() {
 					if(((xCells * yCells) - document.querySelectorAll('.cell[disabled]').length) === mines) {
 						end_game("w");
 					}
+					this.disabled = true;
 				}
 			}
 
@@ -57,8 +57,15 @@ window.onload = function() {
 			for(var j = 0; j < yCells; j++) {
 				mine_cells[i * xCells + j].onclick = function() {};
 				if(mines_matrix[i][j] == -1) {
-					if(type === "l") mine_cells[i * xCells + j].style.backgroundColor = "#900";
-					else if(type === "w") mine_cells[i * xCells + j].style.backgroundColor = "#0a0";
+					if(type === "l") {
+						if(mine_cells[i * xCells + j].readOnly) {
+							mine_cells[i * xCells + j].style.backgroundColor = "#0a0";
+						} else {
+							mine_cells[i * xCells + j].style.backgroundColor = "#900";
+						}
+					} else if(type === "w") {
+						mine_cells[i * xCells + j].style.backgroundColor = "#0a0";
+					}
 				}
 			}
 		}
